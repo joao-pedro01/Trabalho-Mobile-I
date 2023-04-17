@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { Icon } from 'react-native-elements'
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync } from 'expo-location';
 import getCepApi from './services/serviceGoogle';
 import getEndereco from "./services/serviceViaCep";
@@ -11,6 +12,8 @@ export default function App() {
   const [endereco, setEndereco] = useState(null);
 
 
+  // verifica se está permitido o uso do gps no app caso permitido vai pergar a latitude e longitude
+  // senão vai dar um alerta que ele recusou
   useEffect(() => {
     const getLocationAsync = async () => {
       const { granted } = await requestForegroundPermissionsAsync();
@@ -19,12 +22,15 @@ export default function App() {
         const location = await getCurrentPositionAsync();
         setLatitude(location.coords.latitude);
         setLongitude(location.coords.longitude);
+      } else {
+        Alert.alert("Permita o uso de gps para o app funcionar direito!");
       }
     };
 
     getLocationAsync();
   }, []);
 
+  // função que converte coordenadas em cep
   useEffect(() => {
     const cep = async () => {
       const cep = await getCepApi(latitude, longitude);
@@ -47,18 +53,16 @@ export default function App() {
   return (
     <View style={styles.container}>
     <View style={styles.conteudo}>
-      <Text style={styles.titulo}>Localização</Text>
+      <Text style={styles.titulo}>Localização🗺️</Text>
       <Text style={styles.text}>Latitude: {latitude}</Text>
       <Text style={styles.text}>Longitude: {longitude}</Text>
       {cep && <Text style={styles.text}>CEP: {cep}</Text>}
       {endereco && <Text style={styles.text}>Endereço: {endereco.logradouro}, {endereco.bairro} - {endereco.uf}</Text>}
       <TouchableOpacity style={styles.button} onPress={buscaEndereco}>
-        <Text style={styles.textBotao}>Buscar Endereço</Text>
+        <Text style={styles.textBotao}>Buscar Endereço<Icon style={{marginLeft: 10}} name="map-pin" type="font-awesome"   color='#F6F8FA'/></Text>
       </TouchableOpacity>
     </View>
   </View>
-
-
   );
 }
 
@@ -68,7 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0011',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '80%'
+    width: '100%',
   },
   conteudo: {
     backgroundColor: '#fff',

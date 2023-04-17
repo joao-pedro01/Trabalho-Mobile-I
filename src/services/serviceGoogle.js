@@ -2,6 +2,7 @@ import { Alert } from "react-native";
 import axios from 'axios';
 import { CHAVE_API_GOOGLE } from '@env';
 
+/* Função para converter coordenadas em cep */
 async function getEndereco(Latitude, Longitude) {
     try {
         console.log(Latitude, Longitude)
@@ -14,7 +15,7 @@ async function getEndereco(Latitude, Longitude) {
         
         return cep;
     } catch (error) {
-        console.log(error);
+        console.err(error);
 
         return null;
     }
